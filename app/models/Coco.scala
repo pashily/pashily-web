@@ -7,33 +7,28 @@ case class Coco(
   author_entity:    AuthorEntry,
   images:           Images,
   spot:             Spot
-)
+) extends Model
 
 case class AuthorEntry(
   url_name:         String,
   display_name:    String
-)
+) extends Model
 
 case class Images(
   original:            String,
   decorated:           String,
   decorated_thumbnail: String
-)
+) extends Model
 
 case class Spot(
   spot_name: String,
   spot_key: String
-)
+) extends Model
 
-object Coco {
-  implicit def builder = new JsonModelBuilder[Coco]
+object Coco extends HttpModelMapper with DefaultBuild {
+  import play.api.libs.concurrent._
 
-
-  def get(author:String, hereId:String):Option[Coco] = {
-    Json("http://c.hatena.com/%s/h/%s.json".format(author, hereId)) match {
-      case Right(c) => Some(c)
-      case Left(e) => println(e.getMessage); None
-    }
+  def find(author:String, hereId:String) = {
+    get[Coco]("http://c.hatena.com/%s/h/%s.json".format(author, hereId))
   }
 }
-
